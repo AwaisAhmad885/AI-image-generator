@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Creator - Generate Amazing AI Art</title>
+    <meta name="description" content="Create stunning AI-generated images with our free online tool. Select quality, style, and download your creations instantly.">
+    <meta name="keywords" content="AI image generator, artificial intelligence art, AI art creator, free image generator">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOURPUBLISHERID" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --secondary-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: #1e293b;
+        }
+        
+        .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .gradient-bg {
+            background: var(--primary-gradient);
+        }
+        
+        .secondary-gradient-bg {
+            background: var(--secondary-gradient);
+        }
+        
+        .ad-container {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px dashed #cbd5e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .image-container {
+            min-height: 300px;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: all 0.3s ease;
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(99, 102, 241, 0.1);
+            border-left-color: #6366f1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .prompt-tag {
+            transition: all 0.2s ease;
+        }
+        
+        .prompt-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .upload-btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .upload-btn-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .recent-image {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .recent-image:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .btn:hover:after {
+            transform: translateX(0);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        input, select, textarea {
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .image-container {
+                min-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-lg gradient-bg flex items-center justify-center text-white mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold">AI Image <span class="gradient-text">Creator</span></h1>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="text-gray-700 hover:text-indigo-600 transition font-medium">Home</a>
+                <a href="#" class="text-gray-700 hover:text-indigo-600 transition font-medium">Gallery</a>
+                <a href="#" class="text-gray-700 hover:text-indigo-600 transition font-medium">Pricing</a>
+                <a href="#" class="text-gray-700 hover:text-indigo-600 transition font-medium">About</a>
+            </nav>
+            <button class="md:hidden focus:outline-none" id="menu-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+        <div class="md:hidden hidden bg-white absolute w-full z-10 shadow-md" id="mobile-menu">
+            <div class="px-4 py-3 space-y-2">
+                <a href="#" class="block text-gray-700 hover:text-indigo-600 transition py-2 font-medium">Home</a>
+                <a href="#" class="block text-gray-700 hover:text-indigo-600 transition py-2 font-medium">Gallery</a>
+                <a href="#" class="block text-gray-700 hover:text-indigo-600 transition py-2 font-medium">Pricing</a>
+                <a href="#" class="block text-gray-700 hover:text-indigo-600 transition py-2 font-medium">About</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <section class="mb-12">
+            <div class="card p-6 md:p-10">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-6 md:mb-0 md:pr-8">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-4">Create Amazing <span class="gradient-text">AI Art</span></h2>
+                        <p class="text-gray-600 mb-6 text-lg">Transform your ideas into stunning images with our AI-powered image generator. Just describe what you want to see, and watch the magic happen.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="prompt-tag px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm cursor-pointer hover:bg-indigo-200">Futuristic city</span>
+                            <span class="prompt-tag px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm cursor-pointer hover:bg-purple-200">Fantasy landscape</span>
+                            <span class="prompt-tag px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm cursor-pointer hover:bg-pink-200">Space exploration</span>
+                            <span class="prompt-tag px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm cursor-pointer hover:bg-blue-200">Underwater world</span>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2">
+                        <div class="relative rounded-xl overflow-hidden shadow-lg aspect-[4/3]">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" class="w-full h-full">
+                                <defs>
+                                    <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.2" />
+                                        <stop offset="100%" style="stop-color:#d946ef;stop-opacity:0.2" />
+                                    </linearGradient>
+                                    <linearGradient id="heroGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.3" />
+                                        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.3" />
+                                    </linearGradient>
+                                </defs>
+                                <rect width="100%" height="100%" fill="url(#heroGrad)" />
+                                <circle cx="400" cy="300" r="200" fill="url(#heroGrad2)" />
+                                <path d="M100,100 Q400,50 700,100 T700,400 T100,400 T100,100" fill="#6366f1" opacity="0.1" />
+                                <circle cx="200" cy="200" r="50" fill="#d946ef" opacity="0.1" />
+                                <circle cx="600" cy="400" r="80" fill="#3b82f6" opacity="0.1" />
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold gradient-text mb-2">AI Generated</div>
+                                    <div class="text-gray-600">Your imagination, visualized</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Generator Controls -->
+            <div class="lg:col-span-2">
+                <div class="card p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                        Create Your Image
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <label for="prompt" class="block text-sm font-medium text-gray-700 mb-1">Describe your image</label>
+                        <textarea id="prompt" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition" placeholder="A magical forest with glowing mushrooms and a small cottage..."></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label for="style" class="block text-sm font-medium text-gray-700 mb-1">Art Style</label>
+                            <select id="style" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option value="realistic">Realistic</option>
+                                <option value="anime">Anime</option>
+                                <option value="digital-art" selected>Digital Art</option>
+                                <option value="oil-painting">Oil Painting</option>
+                                <option value="watercolor">Watercolor</option>
+                                <option value="pixel-art">Pixel Art</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="quality" class="block text-sm font-medium text-gray-700 mb-1">Image Quality</label>
+                            <select id="quality" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option value="standard">Standard</option>
+                                <option value="high" selected>High</option>
+                                <option value="ultra">Ultra HD</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label for="aspect-ratio" class="block text-sm font-medium text-gray-700 mb-1">Aspect Ratio</label>
+                            <select id="aspect-ratio" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option value="1:1" selected>Square (1:1)</option>
+                                <option value="4:3">Standard (4:3)</option>
+                                <option value="16:9">Widescreen (16:9)</option>
+                                <option value="9:16">Portrait (9:16)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="mood" class="block text-sm font-medium text-gray-700 mb-1">Mood</label>
+                            <select id="mood" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option value="any" selected>Any</option>
+                                <option value="happy">Happy</option>
+                                <option value="mysterious">Mysterious</option>
+                                <option value="dark">Dark</option>
+                                <option value="serene">Serene</option>
+                                <option value="vibrant">Vibrant</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Image Section -->
+                    <div class="mb-6 p-5 border border-dashed border-gray-300 rounded-lg bg-gray-50">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-sm font-medium text-gray-700">Upload a reference image</p>
+                            <span class="text-xs text-gray-500">(optional)</span>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                            <div class="upload-btn-wrapper">
+                                <button class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 transition flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
+                                    Choose File
+                                </button>
+                                <input type="file" id="reference-image" accept="image/*" />
+                            </div>
+                            <span id="file-name" class="text-sm text-gray-500">No file selected</span>
+                        </div>
+                        <div id="reference-preview" class="mt-3 hidden">
+                            <p class="text-xs text-gray-500 mb-1">Preview:</p>
+                            <div class="bg-white p-2 rounded border border-gray-200">
+                                <img id="reference-preview-img" class="h-20 object-contain rounded mx-auto" alt="Reference image preview">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="generate-btn" class="w-full btn gradient-bg text-white font-medium py-3 px-4 rounded-lg hover:opacity-95 transition flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zm1 14a1 1 0 100-2 1 1 0 000 2zm5-1.757l4.9-4.9a2 2 0 000-2.828L13.485 5.1a2 2 0 00-2.828 0L10 5.757v8.486zM16 18H9.071l6-6H16a2 2 0 012 2v2a2 2 0 01-2 2z" clip-rule="evenodd" />
+                        </svg>
+                        Generate Image
+                    </button>
+                </div>
+                
+                <!-- Ad Banner -->
+                <div class="ad-container w-full h-24 rounded-lg mb-8 flex items-center justify-center">
+                    <div class="text-gray-500 text-sm">Advertisement Space (728x90)</div>
+                </div>
+                
+                <!-- Generated Image Display -->
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Your Generated Image
+                        </h2>
+                        <div id="loading-indicator" class="hidden">
+                            <div class="loading-spinner"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="image-container" class="image-container w-full rounded-lg border border-gray-200 flex items-center justify-center mb-6 bg-gray-50 aspect-square">
+                        <div id="placeholder-text" class="text-gray-400 text-center p-8">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p>Your generated image will appear here</p>
+                        </div>
+                        <img id="generated-image" class="hidden max-w-full max-h-[500px] rounded-lg" alt="AI Generated Image">
+                    </div>
+                    
+                    <div id="image-actions" class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden">
+                        <button id="download-btn" class="btn bg-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-indigo-700 transition flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Download Image
+                        </button>
+                        <button id="share-btn" class="btn bg-white border border-indigo-600 text-indigo-600 font-medium py-3 px-4 rounded-lg hover:bg-indigo-50 transition flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                            </svg>
+                            Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Sidebar -->
+            <div class="lg:col-span-1 space-y-8">
+                <!-- Premium Features -->
+                <div class="card overflow-hidden">
+                    <div class="gradient-bg p-6 text-white">
+                        <h3 class="text-xl font-bold mb-2">Upgrade to Premium</h3>
+                        <p class="text-sm opacity-90 mb-0">Unlock advanced features and higher quality</p>
+                    </div>
+                    <div class="p-6">
+                        <ul class="space-y-3 mb-6">
+                            <li class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Ultra HD Quality</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                                <span>No Watermarks</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Priority Generation</span>
+                            </li>
+                            <li class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Commercial Usage Rights</span>
+                            </li>
+                        </ul>
+                        <button class="w-full btn bg-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-indigo-700 transition">
+                            Get Premium
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Ad Square -->
+                <div class="ad-container w-full h-64 rounded-lg flex items-center justify-center">
+                    <div class="text-gray-500 text-sm">Advertisement Space (300x250)</div>
+                </div>
+                
+                <!-- Recent Creations -->
+                <div class="card p-6">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Recent Creations
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="aspect-square recent-image">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="w-full h-full">
+                                    <defs>
+                                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#ff9a9e;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#fad0c4;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <rect width="100%" height="100%" fill="url(#grad1)" />
+                                    <circle cx="100" cy="100" r="70" fill="#fff" opacity="0.3" />
+                                    <path d="M50,50 Q100,25 150,50 T150,150 T50,150 T50,50" fill="#fff" opacity="0.5" />
+                                </svg>
+                            </div>
+                            <div class="aspect-square recent-image">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="w-full h-full">
+                                    <defs>
+                                        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" style="stop-color:#a18cd1;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#fbc2eb;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <rect width="100%" height="100%" fill="url(#grad2)" />
+                                    <rect x="40" y="40" width="120" height="120" fill="#fff" opacity="0.2" />
+                                    <circle cx="100" cy="100" r="40" fill="#fff" opacity="0.4" />
+                                </svg>
+                            </div>
+                            <div class="aspect-square recent-image">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="w-full h-full">
+                                    <defs>
+                                        <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#84fab0;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#8fd3f4;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <rect width="100%" height="100%" fill="url(#grad3)" />
+                                    <polygon points="100,20 120,60 170,60 130,90 150,140 100,110 50,140 70,90 30,60 80,60" fill="#fff" opacity="0.3" />
+                                </svg>
+                            </div>
+                            <div class="aspect-square recent-image">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="w-full h-full">
+                                    <defs>
+                                        <linearGradient id="grad4" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#1a2980;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#26d0ce;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <rect width="100%" height="100%" fill="url(#grad4)" />
+                                    <rect x="30" y="100" width="30" height="70" fill="#2c3e50" />
+                                    <rect x="80" y="80" width="40" height="90" fill="#2c3e50" />
+                                    <rect x="140" y="90" width="30" height="80" fill="#2c3e50" />
+                                    <circle cx="160" cy="50" r="20" fill="#f1c40f" />
+                                </svg>
+                            </div>
+                        </div>
+                        <button class="w-full btn bg-gray-100 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-200 transition text-sm">
+                            View All Creations
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Tips Section -->
+                <div class="card p-6 bg-blue-50 border border-blue-100">
+                    <h3 class="text-lg font-bold mb-3 flex items-center text-blue-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        Tips for Better Results
+                    </h3>
+                    <ul class="space-y-2 text-sm text-blue-800">
+                        <li class="flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Be specific with details like colors, lighting, and mood</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Try different art styles to find what works best</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Use reference images for more accurate results</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-lg gradient-bg flex items-center justify-center text-white mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-bold">AI Image Creator</h4>
+                    </div>
+                    <p class="text-gray-400 text-sm">Create stunning AI-generated images with our powerful tool. Perfect for artists, designers, and creative professionals.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            Home
+                        </a></li>
+                        <li><a href="#" class="hover:text-white transition flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Gallery
+                        </a></li>
+                        <li><a href="#" class="hover:text-white transition flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Pricing
+                        </a></li>
+                        <li><a href="#" class="hover:text-white transition flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            About
+                        </a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect With Us</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-2">Subscribe to our newsletter</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email" class="px-3 py-2 text-gray-700 bg-white rounded-l-lg focus:outline-none text-sm flex-grow">
+                        <button class="btn gradient-bg text-white px-4 py-2 rounded-r-lg text-sm hover:opacity-95 transition">
+                            Subscribe
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm text-gray-500">&copy; 2023 AI Image Creator. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-sm text-gray-500 hover:text-white transition">Privacy Policy</a>
+                    <a href="#" class="text-sm text-gray-500 hover:text-white transition">Terms of Service</a>
+                    <a href="#" class="text-sm text-gray-500 hover:text-white transition">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Prompt tags click handler
+        document.querySelectorAll('.prompt-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                document.getElementById('prompt').value = this.textContent;
+                document.getElementById('prompt').focus();
+            });
+        });
+
+        // File upload handler
+        document.getElementById('reference-image').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || 'No file selected';
+            document.getElementById('file-name').textContent = fileName;
+            
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    document.getElementById('reference-preview-img').src = e.target.result;
+                    document.getElementById('reference-preview').classList.remove('hidden');
+                }
+                
+                reader.readAsDataURL(e.target.files[0]);
+            } else {
+                document.getElementById('reference-preview').classList.add('hidden');
+            }
+        });
+
+        // Sample AI-generated images (SVG patterns to simulate AI art)
+        const sampleImages = [
+            // Abstract colorful pattern
+            `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+                <defs>
+                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ff9a9e;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#fad0c4;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#a18cd1;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#fbc2eb;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#84fab0;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#8fd3f4;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grad1)" />
+                <circle cx="400" cy="400" r="300" fill="url(#grad2)" />
+                <path d="M100,100 Q400,200 700,100 T700,500 T100,500 T100,100" fill="url(#grad3)" opacity="0.7" />
+                <circle cx="200" cy="200" r="100" fill="#fff" opacity="0.3" />
+                <circle cx="600" cy="600" r="150" fill="#fff" opacity="0.2" />
+            </svg>`,
+            
+            // Digital landscape
+            `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+                <defs>
+                    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#1a2980;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#26d0ce;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#skyGrad)" />
+                <polygon points="0,500 200,400 400,450 600,350 800,500 800,800 0,800" fill="#2c3e50" />
+                <polygon points="0,600 200,550 400,580 600,530 800,600 800,800 0,800" fill="#34495e" />
+                <circle cx="700" cy="150" r="80" fill="#f1c40f" />
+                <rect x="100" y="450" width="80" height="150" fill="#7f8c8d" />
+                <rect x="120" y="480" width="40" height="40" fill="#ecf0f1" />
+                <rect x="500" y="420" width="100" height="180" fill="#7f8c8d" />
+                <rect x="520" y="450" width="30" height="40" fill="#ecf0f1" />
+                <rect x="570" y="450" width="30" height="40" fill="#ecf0f1" />
+                <rect x="520" y="510" width="60" height="60" fill="#ecf0f1" />
+            </svg>`,
+            
+            // Fantasy creature
+            `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+                <defs>
+                    <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
+                        <stop offset="0%" style="stop-color:#5f2c82;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#49a09d;stop-opacity:1" />
+                    </radialGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#bgGrad)" />
+                <ellipse cx="400" cy="500" rx="300" ry="200" fill="#2c3e50" />
+                <ellipse cx="400" cy="450" rx="150" ry="200" fill="#8e44ad" />
+                <circle cx="400" cy="300" r="100" fill="#9b59b6" />
+                <circle cx="350" cy="280" r="20" fill="#ecf0f1" />
+                <circle cx="450" cy="280" r="20" fill="#ecf0f1" />
+                <circle cx="350" cy="280" r="10" fill="#2c3e50" />
+                <circle cx="450" cy="280" r="10" fill="#2c3e50" />
+                <path d="M350,350 Q400,400 450,350" stroke="#ecf0f1" stroke-width="5" fill="transparent" />
+                <path d="M300,200 L350,250 M500,200 L450,250" stroke="#9b59b6" stroke-width="10" fill="transparent" />
+                <path d="M300,180 L330,150 M500,180 L470,150" stroke="#9b59b6" stroke-width="8" fill="transparent" />
+            </svg>`,
+            
+            // Futuristic city
+            `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+                <defs>
+                    <linearGradient id="cityGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#000428;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#004e92;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#cityGrad)" />
+                <rect x="100" y="300" width="80" height="500" fill="#34495e" />
+                <rect x="110" y="320" width="60" height="30" fill="#3498db" opacity="0.8" />
+                <rect x="110" y="360" width="60" height="30" fill="#3498db" opacity="0.8" />
+                <rect x="110" y="400" width="60" height="30" fill="#3498db" opacity="0.8" />
+                <rect x="110" y="440" width="60" height="30" fill="#3498db" opacity="0.8" />
+                <rect x="110" y="480" width="60" height="30" fill="#3498db" opacity="0.8" />
+                <rect x="200" y="200" width="100" height="600" fill="#2c3e50" />
+                <rect x="220" y="220" width="20" height="20" fill="#3498db" opacity="0.8" />
+                <rect x="260" y="220" width="20" height="20" fill="#3498db" opacity="0.8" />
+                <rect x="220" y="260" width="20" height="20" fill="#3498db" opacity="0.8" />
+                <rect x="260" y="260" width="20" height="20" fill="#3498db" opacity="0.8" />
+                <rect x="220" y="300" width="20" height="20" fill="#3498db" opacity="0.8" />
+                <rect x="260" y="300" width="20" height="20" fill="#3498db" opacity="0.8" />
+                <rect x="220" y="340" width="20" height="20" fill="#3498db" opacity="0.8" />
+                <rect x="260" y="340" width="20" height="20" fill="#3498db" opacity="0.8" />
+                <rect x="350" y="100" width="120" height="700" fill="#34495e" />
+                <rect x="370" y="120" width="80" height="40" fill="#3498db" opacity="0.8" />
+                <rect x="370" y="180" width="80" height="40" fill="#3498db" opacity="0.8" />
+                <rect x="370" y="240" width="80" height="40" fill="#3498db" opacity="0.8" />
+                <rect x="370" y="300" width="80" height="40" fill="#3498db" opacity="0.8" />
+                <rect x="370" y="360" width="80" height="40" fill="#3498db" opacity="0.8" />
+                <rect x="500" y="250" width="90" height="550" fill="#2c3e50" />
+                <rect x="510" y="270" width="70" height="30" fill="#3498db" opacity="0.8" />
+                <rect x="510" y="310" width="70" height="30" fill="#3498db" opacity="0.8" />
+                <rect x="510" y="350" width="70" height="30" fill="#3498db" opacity="0.8" />
+                <rect x="510" y="390" width="70" height="30" fill="#3498db" opacity="0.8" />
+                <rect x="620" y="350" width="70" height="450" fill="#34495e" />
+                <rect x="630" y="370" width="50" height="25" fill="#3498db" opacity="0.8" />
+                <rect x="630" y="405" width="50" height="25" fill="#3498db" opacity="0.8" />
+                <rect x="630" y="440" width="50" height="25" fill="#3498db" opacity="0.8" />
+                <rect x="630" y="475" width="50" height="25" fill="#3498db" opacity="0.8" />
+                <circle cx="150" cy="150" r="30" fill="#f1c40f" opacity="0.8" />
+            </svg>`,
+            
+            // Space scene
+            `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+                <rect width="100%" height="100%" fill="#0a0b22" />
+                <circle cx="400" cy="400" r="150" fill="#1a237e" />
+                <circle cx="400" cy="400" r="140" fill="#283593" />
+                <circle cx="400" cy="400" r="130" fill="#303f9f" />
+                <circle cx="400" cy="400" r="120" fill="#3949ab" />
+                <circle cx="400" cy="400" r="110" fill="#3f51b5" />
+                <circle cx="400" cy="400" r="100" fill="#5c6bc0" />
+                <circle cx="400" cy="400" r="90" fill="#7986cb" />
+                <circle cx="400" cy="400" r="80" fill="#9fa8da" />
+                <circle cx="400" cy="400" r="70" fill="#c5cae9" />
+                <circle cx="400" cy="400" r="60" fill="#e8eaf6" />
+                <circle cx="450" cy="350" r="20" fill="#ffffff" opacity="0.3" />
+                <circle cx="100" cy="100" r="2" fill="#ffffff" />
+                <circle cx="150" cy="250" r="1" fill="#ffffff" />
+                <circle cx="200" cy="50" r="1.5" fill="#ffffff" />
+                <circle cx="250" cy="150" r="1" fill="#ffffff" />
+                <circle cx="300" cy="200" r="2" fill="#ffffff" />
+                <circle cx="350" cy="100" r="1" fill="#ffffff" />
+                <circle cx="450" cy="50" r="1.5" fill="#ffffff" />
+                <circle cx="500" cy="150" r="1" fill="#ffffff" />
+                <circle cx="550" cy="200" r="2" fill="#ffffff" />
+                <circle cx="600" cy="100" r="1" fill="#ffffff" />
+                <circle cx="650" cy="250" r="1.5" fill="#ffffff" />
+                <circle cx="700" cy="50" r="1" fill="#ffffff" />
+                <circle cx="750" cy="150" r="2" fill="#ffffff" />
+                <circle cx="100" cy="300" r="1" fill="#ffffff" />
+                <circle cx="150" cy="450" r="1.5" fill="#ffffff" />
+                <circle cx="200" cy="350" r="1" fill="#ffffff" />
+                <circle cx="250" cy="550" r="2" fill="#ffffff" />
+                <circle cx="300" cy="500" r="1" fill="#ffffff" />
+                <circle cx="350" cy="600" r="1.5" fill="#ffffff" />
+                <circle cx="450" cy="650" r="1" fill="#ffffff" />
+                <circle cx="500" cy="550" r="2" fill="#ffffff" />
+                <circle cx="550" cy="700" r="1" fill="#ffffff" />
+                <circle cx="600" cy="600" r="1.5" fill="#ffffff" />
+                <circle cx="650" cy="750" r="1" fill="#ffffff" />
+                <circle cx="700" cy="450" r="2" fill="#ffffff" />
+                <circle cx="750" cy="550" r="1" fill="#ffffff" />
+                <circle cx="600" cy="300" r="40" fill="#ff9800" />
+                <circle cx="600" cy="300" r="35" fill="#fb8c00" />
+                <circle cx="600" cy="300" r="30" fill="#f57c00" />
+                <circle cx="600" cy="300" r="25" fill="#ef6c00" />
+                <circle cx="600" cy="300" r="20" fill="#e65100" />
+                <ellipse cx="200" cy="650" rx="80" ry="20" fill="#78909c" opacity="0.8" />
+                <ellipse cx="200" cy="650" rx="60" ry="15" fill="#90a4ae" opacity="0.8" />
+                <ellipse cx="200" cy="650" rx="40" ry="10" fill="#b0bec5" opacity="0.8" />
+                <ellipse cx="200" cy="650" rx="20" ry="5" fill="#cfd8dc" opacity="0.8" />
+            </svg>`
+        ];
+
+        // Generate button click handler
+        document.getElementById('generate-btn').addEventListener('click', function() {
+            const prompt = document.getElementById('prompt').value;
+            const quality = document.getElementById('quality').value;
+            const style = document.getElementById('style').value;
+            
+            if (!prompt) {
+                alert('Please enter a description for your image.');
+                return;
+            }
+            
+            // Show loading indicator
+            document.getElementById('loading-indicator').classList.remove('hidden');
+            document.getElementById('placeholder-text').classList.remove('hidden');
+            document.getElementById('generated-image').classList.add('hidden');
+            document.getElementById('image-actions').classList.add('hidden');
+            
+            // Smooth scroll to image container on mobile
+            if (window.innerWidth < 768) {
+                document.getElementById('image-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            // Simulate AI image generation (with delay to show loading)
+            setTimeout(() => {
+                // Hide loading indicator
+                document.getElementById('loading-indicator').classList.add('hidden');
+                document.getElementById('placeholder-text').classList.add('hidden');
+                
+                // Select a random sample image
+                const randomIndex = Math.floor(Math.random() * sampleImages.length);
+                const imageDataUrl = 'data:image/svg+xml;base64,' + btoa(sampleImages[randomIndex]);
+                
+                // Display the generated image
+                const generatedImage = document.getElementById('generated-image');
+                generatedImage.src = imageDataUrl;
+                generatedImage.classList.remove('hidden');
+                
+                // Show image actions
+                document.getElementById('image-actions').classList.remove('hidden');
+                
+                // Apply quality settings (simulated)
+                if (quality === 'standard') {
+                    generatedImage.style.filter = 'blur(0.5px)';
+                } else if (quality === 'high') {
+                    generatedImage.style.filter = 'none';
+                } else if (quality === 'ultra') {
+                    generatedImage.style.filter = 'contrast(1.1) saturate(1.1)';
+                }
+                
+            }, 2000); // 2 second delay to simulate processing
+        });
+
+        // Download button click handler
+        document.getElementById('download-btn').addEventListener('click', function() {
+            const generatedImage = document.getElementById('generated-image');
+            if (generatedImage.src) {
+                const link = document.createElement('a');
+                link.href = generatedImage.src;
+                link.download = 'ai-generated-image.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
+
+        // Share button click handler
+        document.getElementById('share-btn').addEventListener('click', function() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My AI Generated Image',
+                    text: 'Check out this image I created with AI Image Creator!',
+                    url: window.location.href
+                })
+                .catch(error => console.log('Error sharing:', error));
+            } else {
+                alert('Share functionality is not supported on your browser. You can copy the URL manually.');
+            }
+        });
+
+        // Make recent creation images clickable
+        document.querySelectorAll('.recent-image').forEach((image, index) => {
+            image.addEventListener('click', function() {
+                // Show loading indicator
+                document.getElementById('loading-indicator').classList.remove('hidden');
+                document.getElementById('placeholder-text').classList.remove('hidden');
+                document.getElementById('generated-image').classList.add('hidden');
+                document.getElementById('image-actions').classList.add('hidden');
+                
+                // Scroll to the image container on mobile
+                if (window.innerWidth < 768) {
+                    document.getElementById('image-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                
+                // Simulate loading the selected image
+                setTimeout(() => {
+                    // Hide loading indicator
+                    document.getElementById('loading-indicator').classList.add('hidden');
+                    document.getElementById('placeholder-text').classList.add('hidden');
+                    
+                    // Get the SVG content from the clicked image
+                    const svgContent = image.querySelector('svg').outerHTML;
+                    const imageDataUrl = 'data:image/svg+xml;base64,' + btoa(svgContent);
+                    
+                    // Display the generated image
+                    const generatedImage = document.getElementById('generated-image');
+                    generatedImage.src = imageDataUrl;
+                    generatedImage.classList.remove('hidden');
+                    
+                    // Show image actions
+                    document.getElementById('image-actions').classList.remove('hidden');
+                }, 1000);
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9602161f233c9098',t:'MTc1MjY3NTA2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
